@@ -1,5 +1,10 @@
 package org.example.mason.movie.service
 
+import org.example.mason.movie.mapper.toDto
+import org.example.mason.movie.model.dto.UserRegAndLoginDto
+import org.example.mason.movie.model.dto.UsersDto
+import org.example.mason.movie.model.entity.Users
+import org.example.mason.movie.model.enum.Role
 import org.example.mason.movie.repo.UsersRepository
 import org.example.mason.movie.security.UsersPrincipal
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -29,5 +34,17 @@ class UsersService(
             passwordHash = user.password,
             authoritiesCollection = authorities
         )
+    }
+
+    fun getUserDtoByEmail(username: String): UsersDto {
+        val users = userRepository.findByEmail(username)
+            .orElseThrow { UsernameNotFoundException("User not found with email: $username") }
+        return users.toDto()
+    }
+
+    fun createUser(userDto: UserRegAndLoginDto): UsersDto {
+        val newUser = Users(userName = userDto.userName, email = userDto.email, password = passwordEncoder.encode(userDto.password), role = Role.USER)
+        val savedUser = userRepository.save(newUser)
+        return UsersDto(id = savedUser.id!!, userName = savedUser.userName, email = savedUser.email, role = savedUser.role)
     }
 }

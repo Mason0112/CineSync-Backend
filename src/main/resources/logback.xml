@@ -1,0 +1,21 @@
+<configuration>
+
+    <!-- 1. 定義日誌輸出的格式和位置 (這裡設定為輸出到主控台) -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 日誌格式：時間 [%執行緒] 等級 Logger名稱 - 訊息 換行 -->
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 2. 針對您自己的程式碼套件，設定更詳細的日誌級別 -->
+    <!-- 這將讓您看到自己寫的 DEBUG 和 TRACE 日誌 -->
+    <logger name="org.example.mason.movie.service" level="DEBUG" />
+
+    <!-- 3. 設定根 (root) Logger 的級別 -->
+    <!-- 將其他函式庫 (如 Netty) 的日誌級別設為 INFO，避免過多雜訊 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

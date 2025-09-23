@@ -4,14 +4,15 @@ import org.example.mason.movie.model.enum.Role
 
 data class UserRegAndLoginDto(
     val email: String,
+    val userName: String,
     val password: String
 )
 data class LoginResponseDto(
     val token: String?,
-    val user: UserDto
+    val user: UsersDto
 )
 
-data class UserDto(
+data class UsersDto(
     val id: Long,
     val userName: String,
     val email: String,
