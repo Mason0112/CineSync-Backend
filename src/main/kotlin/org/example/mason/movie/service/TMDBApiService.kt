@@ -1,9 +1,12 @@
 package org.example.mason.movie.service
 
 import kotlinx.serialization.json.Json
+import org.example.mason.movie.model.dto.MovieDetailResponse
 import org.example.mason.movie.model.dto.PopularMovieApiResponse
+import org.example.mason.movie.model.json.MovieDetail
 import org.example.mason.movie.model.json.PopularMovieResponse
 import org.example.mason.movie.model.json.TmdbConfig
+import org.example.mason.movie.model.json.toMovieResponse
 import org.example.mason.movie.model.json.toPopularMovieApiResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,8 +23,8 @@ class TMDBApiService {
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(TMDBApiService::class.java)
         const val TMDB_API_BASE_URL = "https://api.themoviedb.org/3"
-        const val TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
-        const val TMDB_API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZDM0Y2ZkM2MzYzA4ZWYyOThjNTZkYzdlODFjMjAxYiIsIm5iZiI6MTc1ODE4OTA3MS45NjUsInN1YiI6IjY4Y2JkNjBmNjFjMmIwYTM0YWNmNDY0MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.QQvwy2IvhOJrtWZcNXv-MNQY7DseXmY4HYPbz7hP4ME"
+        const val TMDB_API_KEY =
+            "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZDM0Y2ZkM2MzYzA4ZWYyOThjNTZkYzdlODFjMjAxYiIsIm5iZiI6MTc1ODE4OTA3MS45NjUsInN1YiI6IjY4Y2JkNjBmNjFjMmIwYTM0YWNmNDY0MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.QQvwy2IvhOJrtWZcNXv-MNQY7DseXmY4HYPbz7hP4ME"
     }
 
     private val webClient: WebClient
@@ -65,8 +68,6 @@ class TMDBApiService {
 
     suspend fun getPopularMovies(page: Int = 1, language: String = "zh-TW"): PopularMovieApiResponse? {
         return try {
-            logger.info("正在擷取第 {} 頁的熱門電影...", page)
-
             val originalResponse = webClient.get()
                 .uri { uriBuilder ->
                     uriBuilder
@@ -79,18 +80,33 @@ class TMDBApiService {
                 }
                 .retrieve()
                 .awaitBody<PopularMovieResponse>()
-
-            originalResponse.copy(
-                results = originalResponse.results.map { movie ->
-                    movie.posterPath?.let { path ->
-                        movie.copy(posterPath = TMDB_IMAGE_BASE_URL + path)
-                    } ?: movie
-                }
-            ).toPopularMovieApiResponse()
+            logger.info("成功擷取熱門電影資料")
+            originalResponse.toPopularMovieApiResponse()
         } catch (e: Exception) {
             logger.error("呼叫 TMDB 熱門電影 API 失敗", e)
             null // 發生任何例外時，回傳 null
         }
     }
+
+    suspend fun getMovieDetail(id: Int, language: String = "zh-TW"): MovieDetailResponse? {
+        return try {
+            val movieDetail = webClient.get()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/movie")
+                        .path("/${id}")
+                        .queryParam("language", language)
+                        .build()
+                }
+                .retrieve()
+                .awaitBody<MovieDetail>()
+            logger.info("電影詳情: $movieDetail")
+            movieDetail.toMovieResponse()
+        } catch (e: Exception) {
+            logger.error("電影詳情呼叫失敗", e)
+            null;
+        }
+    }
+
 
 }

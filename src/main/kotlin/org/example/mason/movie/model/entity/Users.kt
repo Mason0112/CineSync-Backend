@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import org.example.mason.movie.model.enum.Role
+import org.example.mason.movie.model.enum.UsersRole
 
 @Entity
 @Table(name = "users")
@@ -21,5 +21,5 @@ data class Users (
     var email: String,
     var password: String,
     @Enumerated(EnumType.STRING)
-    var role: Role
+    var usersRole: UsersRole
 )

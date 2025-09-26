@@ -1,20 +1,26 @@
 package org.example.mason.movie.model.dto
 
-import org.example.mason.movie.model.enum.Role
+import org.example.mason.movie.model.enum.UsersRole
 
-data class UserRegAndLoginDto(
+data class UserRegisterDto(
     val email: String,
     val userName: String,
     val password: String
 )
+
+data class UserLoginDto(
+    val email: String,
+    val password: String
+)
+
 data class LoginResponseDto(
     val token: String?,
-    val user: UsersDto
+    val users: UsersDto
 )
 
 data class UsersDto(
     val id: Long,
     val userName: String,
     val email: String,
-    val role: Role
+    val usersRole: UsersRole
 )

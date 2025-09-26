@@ -1,7 +1,8 @@
 package org.example.mason.movie.controller
 
 import org.example.mason.movie.model.dto.LoginResponseDto
-import org.example.mason.movie.model.dto.UserRegAndLoginDto
+import org.example.mason.movie.model.dto.UserLoginDto
+import org.example.mason.movie.model.dto.UserRegisterDto
 import org.example.mason.movie.security.JwtTokenProvider
 import org.example.mason.movie.service.UsersService
 import org.springframework.http.HttpStatus
@@ -25,7 +26,7 @@ class AuthController(
 ) {
 
     @PostMapping("/login")
-    fun authenticateUser(@RequestBody loginRequest: UserRegAndLoginDto): ResponseEntity<LoginResponseDto> {
+    fun authenticateUser(@RequestBody loginRequest: UserLoginDto): ResponseEntity<LoginResponseDto> {
         val authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(loginRequest.email, loginRequest.password)
         )
@@ -34,13 +35,14 @@ class AuthController(
     }
 
     @PostMapping("/register")
-    fun registerUser(@RequestBody registerDto: UserRegAndLoginDto): ResponseEntity<LoginResponseDto> {
+    fun registerUser(@RequestBody registerDto: UserRegisterDto): ResponseEntity<LoginResponseDto> {
         // 1. 先建立使用者
-        usersService.createUser(registerDto)
+        val createUserAndGetDetails = usersService.createUserAndGetDetails(registerDto)
 
-        // 2. 建立成功後，立刻為他們進行認證
-        val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(registerDto.email, registerDto.password)
+        val authentication = UsernamePasswordAuthenticationToken(
+            createUserAndGetDetails,
+            null, // 密碼不需要，因為已經是認證過的狀態
+            createUserAndGetDetails.authorities
         )
         SecurityContextHolder.getContext().authentication = authentication
 
@@ -53,7 +55,7 @@ class AuthController(
         val userDetails = authentication.principal as org.springframework.security.core.userdetails.UserDetails
         val jwt = jwtTokenProvider.generateToken(userDetails)
         val userDto = usersService.getUserDtoByEmail(userDetails.username)
-        val loginResponse = LoginResponseDto(token = jwt, user = userDto)
+        val loginResponse = LoginResponseDto(token = jwt, users = userDto)
         return ResponseEntity(loginResponse, status)
     }
 }

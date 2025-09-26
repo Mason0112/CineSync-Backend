@@ -1,10 +1,10 @@
 package org.example.mason.movie.service
 
 import org.example.mason.movie.mapper.toDto
-import org.example.mason.movie.model.dto.UserRegAndLoginDto
+import org.example.mason.movie.model.dto.UserRegisterDto
 import org.example.mason.movie.model.dto.UsersDto
 import org.example.mason.movie.model.entity.Users
-import org.example.mason.movie.model.enum.Role
+import org.example.mason.movie.model.enum.UsersRole
 import org.example.mason.movie.repo.UsersRepository
 import org.example.mason.movie.security.UsersPrincipal
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -24,7 +24,7 @@ class UsersService(
         val user = userRepository.findByEmail(email)
             .orElseThrow { UsernameNotFoundException("User not found with email: $email") }
 
-        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.usersRole.name}"))
 
         // 🎯 關鍵變更：回傳您自訂的 UserPrincipal 物件
         return UsersPrincipal(
@@ -41,10 +41,16 @@ class UsersService(
             .orElseThrow { UsernameNotFoundException("User not found with email: $username") }
         return users.toDto()
     }
-
-    fun createUser(userDto: UserRegAndLoginDto): UsersDto {
-        val newUser = Users(userName = userDto.userName, email = userDto.email, password = passwordEncoder.encode(userDto.password), role = Role.USER)
+    fun createUserAndGetDetails(userDto: UserRegisterDto): UsersPrincipal {
+        val newUser = Users(userName = userDto.userName, email = userDto.email, password = passwordEncoder.encode(userDto.password), usersRole = UsersRole.USER)
         val savedUser = userRepository.save(newUser)
-        return UsersDto(id = savedUser.id!!, userName = savedUser.userName, email = savedUser.email, role = savedUser.role)
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_${savedUser.usersRole.name}"))
+        return UsersPrincipal(
+            id = savedUser.id,
+            userName = savedUser.userName,
+            email = savedUser.email,
+            passwordHash = savedUser.password,
+            authoritiesCollection = authorities
+        )
     }
 }
