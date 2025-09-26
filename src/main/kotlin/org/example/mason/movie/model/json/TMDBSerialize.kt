@@ -99,12 +99,14 @@ data class ProductionCompany(
 )
 
 fun MovieDetail.toMovieResponse(): MovieDetailResponse {
+    val imageBaseUrl = "https://image.tmdb.org/t/p/w780"
+
     return MovieDetailResponse(
         id = this.id,
-        backdropPath = this.backdropPath,
+        backdropPath = this.backdropPath?.let { imageBaseUrl + backdropPath},
         budget = this.budget,
         genres = this.genres.map { genre ->
-            org.example.mason.movie.model.dto.GenresDto(
+            org.example.mason.movie.model.dto.GenreDto(
                 id = genre.id,
                 name = genre.name
             )

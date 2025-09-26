@@ -21,7 +21,7 @@ data class MovieDetailResponse(
     val id: Int,
     val backdropPath: String?,
     val budget: Int,
-    val genres: List<GenresDto>,
+    val genres: List<GenreDto>,
     val releaseDate: String,
     val overview: String,
     val title: String,
@@ -29,7 +29,7 @@ data class MovieDetailResponse(
 
 )
 
-data class GenresDto(
+data class GenreDto(
     val id: Int,
     val name: String
 )
