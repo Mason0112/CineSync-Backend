@@ -26,8 +26,9 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/movies/**").permitAll()
                     .requestMatchers("/ws/**").permitAll()
-                    .anyRequest().permitAll()
+                    .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 

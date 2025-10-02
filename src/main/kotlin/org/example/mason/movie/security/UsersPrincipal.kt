@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 data class UsersPrincipal(
-    val id: Long?,
+    val id: Long,
     val userName: String,
     private val email: String,
     @JsonIgnore // 在序列化成 JSON 時忽略密碼
