@@ -28,7 +28,7 @@ class SecurityConfig(
                 it.requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/movies/**").permitAll()
                     .requestMatchers("/ws/**").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 

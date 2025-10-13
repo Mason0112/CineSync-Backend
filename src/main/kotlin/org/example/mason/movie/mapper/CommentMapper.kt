@@ -19,7 +19,7 @@ fun CommentRequest.toEntity(userId: Long): Comments {
     return Comments(
         id = null,
         movieId = this.movieId,
-        userId = 0,
+        userId = userId,
         content = this.content,
         createdAt = null,
         updatedAt = null
