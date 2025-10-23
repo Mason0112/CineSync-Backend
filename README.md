@@ -314,11 +314,11 @@ This project uses The Movie Database (TMDB) API for movie data. You need to:
 
 ## License
 
-[Add your license information here]
+MIT
 
 ## Contact
 
-[Add your contact information here]
+E-mail:willy55406@gmail.com
 
 ## Acknowledgments
 
