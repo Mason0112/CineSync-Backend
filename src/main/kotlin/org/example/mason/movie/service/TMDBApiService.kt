@@ -10,6 +10,7 @@ import org.example.mason.movie.model.json.toMovieResponse
 import org.example.mason.movie.model.json.toPopularMovieApiResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.codec.json.KotlinSerializationJsonDecoder
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
@@ -18,13 +19,13 @@ import org.springframework.web.reactive.function.client.awaitBody
 
 
 @Service
-class TMDBApiService {
+class TMDBApiService(
+    @Value("\${tmdb.api.key}") private val tmdbApiKey: String,
+    @Value("\${tmdb.api.base-url}") private val tmdbApiBaseUrl: String
+) {
 
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(TMDBApiService::class.java)
-        const val TMDB_API_BASE_URL = "https://api.themoviedb.org/3"
-        const val TMDB_API_KEY =
-            "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZDM0Y2ZkM2MzYzA4ZWYyOThjNTZkYzdlODFjMjAxYiIsIm5iZiI6MTc1ODE4OTA3MS45NjUsInN1YiI6IjY4Y2JkNjBmNjFjMmIwYTM0YWNmNDY0MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.QQvwy2IvhOJrtWZcNXv-MNQY7DseXmY4HYPbz7hP4ME"
     }
 
     private val webClient: WebClient
@@ -41,18 +42,18 @@ class TMDBApiService {
 
         // 在 init 區塊中，對宣告好的 webClient 屬性進行賦值
         webClient = WebClient.builder()
-            .baseUrl(TMDB_API_BASE_URL)
+            .baseUrl(tmdbApiBaseUrl)
             .exchangeStrategies(strategies) // 5. 套用上面建立的 strategies
             .defaultHeader(
                 "Authorization",
-                "Bearer $TMDB_API_KEY"
+                "Bearer $tmdbApiKey"
             )
             .defaultHeader(
                 "Accept",
                 "application/json"
             )
             .build()
-        logger.info("WebClient has been initialized.")
+        logger.info("WebClient has been initialized with base URL: $tmdbApiBaseUrl")
     }
 
     suspend fun callConfig() {

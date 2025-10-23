@@ -62,24 +62,64 @@ Create a MySQL database:
 CREATE DATABASE cineSync;
 ```
 
-### 3. Configure Application Properties
+### 3. Set Up Environment Variables
 
-Update `src/main/resources/application.properties`:
+This project uses environment variables for sensitive configuration. You have two options:
 
-```properties
-# Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3307/cineSync
-spring.datasource.username=root
-spring.datasource.password=your_password
+#### Option A: Using .env file (Recommended for Development)
 
-# JWT Configuration
-jwt.secret=your_jwt_secret_key
-jwt.expiration=86400000
+This project uses [spring-dotenv](https://github.com/paulschwarz/spring-dotenv) to automatically load environment variables from a `.env` file.
 
-# TMDB API Configuration
-tmdb.api.key=your_tmdb_api_key
-tmdb.api.base-url=https://api.themoviedb.org/3
+1. Copy the example environment file:
+```bash
+cp .env.example .env
 ```
+
+2. Edit `.env` and add your actual values:
+```properties
+DB_URL=jdbc:mysql://localhost:3307/cineSync
+DB_USERNAME=root
+DB_PASSWORD=your_actual_password
+
+JWT_SECRET=your_jwt_secret_key_minimum_256_bits
+
+TMDB_API_KEY=your_tmdb_bearer_token
+TMDB_API_BASE_URL=https://api.themoviedb.org/3
+```
+
+**Note:**
+- The `.env` file is already in `.gitignore` and will not be committed to version control.
+- The `.env` file will be automatically loaded when you run the application.
+- No additional configuration needed - just create the file and run!
+
+#### Option B: Using System Environment Variables
+
+Set the following environment variables in your system:
+
+**Windows (PowerShell):**
+```powershell
+$env:DB_PASSWORD="your_password"
+$env:JWT_SECRET="your_jwt_secret"
+$env:TMDB_API_KEY="your_tmdb_bearer_token"
+```
+
+**Linux/Mac:**
+```bash
+export DB_PASSWORD="your_password"
+export JWT_SECRET="your_jwt_secret"
+export TMDB_API_KEY="your_tmdb_bearer_token"
+```
+
+#### Required Environment Variables:
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `DB_URL` | Database connection URL | No | `jdbc:mysql://localhost:3307/cineSync` |
+| `DB_USERNAME` | Database username | No | `root` |
+| `DB_PASSWORD` | Database password | **Yes** | - |
+| `JWT_SECRET` | Secret key for JWT signing (min 256 bits) | **Yes** | - |
+| `TMDB_API_KEY` | TMDB API Bearer token | **Yes** | - |
+| `TMDB_API_BASE_URL` | TMDB API base URL | No | `https://api.themoviedb.org/3` |
 
 ### 4. Build the Project
 
@@ -293,7 +333,11 @@ java -jar build/libs/movie-0.0.1-SNAPSHOT.jar
 - JWT tokens are required for protected endpoints
 - CSRF protection is disabled for stateless API
 - Session management is stateless
-- Sensitive configuration should use environment variables in production
+- **Sensitive data (API keys, passwords, secrets) are managed via environment variables**
+- The `.env` file is excluded from version control via `.gitignore`
+- Never commit sensitive credentials to the repository
+- In production, use secure secret management systems (AWS Secrets Manager, Azure Key Vault, etc.)
+- Rotate JWT secrets and API keys periodically
 
 ## API Integration
 
