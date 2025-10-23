@@ -2,15 +2,9 @@ package org.example.mason.movie.controller
 
 import org.example.mason.movie.model.dto.MovieDetailResponse
 import org.example.mason.movie.model.dto.PopularMovieApiResponse
-import org.example.mason.movie.model.json.MovieDetail
-import org.example.mason.movie.model.json.PopularMovieResponse
 import org.example.mason.movie.service.TMDBApiService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/movies")
@@ -18,7 +12,6 @@ class TMDataBaseController(TMDBApiService: TMDBApiService) {
 
 
     private val tMDBApiService: TMDBApiService = TMDBApiService
-
 
     @GetMapping("/popular")
     suspend fun getPopularMovies(

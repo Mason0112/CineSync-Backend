@@ -3,9 +3,9 @@ package org.example.mason.movie.security
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.example.mason.movie.service.UsersService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val tokenProvider: JwtTokenProvider,
-    private val userService: UsersService
+    private val userDetailsService: UserDetailsService
 ) : OncePerRequestFilter() {
 
 
@@ -23,7 +23,7 @@ class JwtAuthenticationFilter(
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             val email = tokenProvider.getEmailFromJWT(jwt)
-            val userDetails = userService.loadUserByUsername(email)
+            val userDetails = userDetailsService.loadUserByUsername(email)
             val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication

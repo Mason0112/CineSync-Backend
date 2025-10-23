@@ -37,12 +37,12 @@ class AuthController(
     @PostMapping("/register")
     fun registerUser(@RequestBody registerDto: UserRegisterDto): ResponseEntity<LoginResponseDto> {
         // 1. 先建立使用者
-        val createUserAndGetDetails = usersService.createUserAndGetDetails(registerDto)
+        val userDetail = usersService.createUserAndGetDetails(registerDto)
 
         val authentication = UsernamePasswordAuthenticationToken(
-            createUserAndGetDetails,
+            userDetail,
             null, // 密碼不需要，因為已經是認證過的狀態
-            createUserAndGetDetails.authorities
+            userDetail.authorities
         )
         SecurityContextHolder.getContext().authentication = authentication
 
